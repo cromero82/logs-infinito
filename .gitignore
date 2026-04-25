@@ -1,24 +1,96 @@
-# Compiled class file
+# =============================================================================
+# .gitignore - logs-infinito
+# Este repositorio solo persiste configuraciones e integración local.
+# Las distribuciones binarias de Grafana e InfluxDB se descargan aparte.
+# =============================================================================
+
+# ----- Compilados y artefactos Java (app lanzador / scripts) -----
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
 *.ctxt
-
-# Mobile Tools for Java (J2ME)
 .mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.nar
 *.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# ----- Comprimidos / instaladores -----
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# ----- Binarios nativos / ejecutables -----
+*.exe
+*.dll
+*.so
+*.dylib
+*.pyd
+*.lib
+*.a
+
+# ----- Python (artefactos en general) -----
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+
+# ----- Logs -----
+*.log
+logs/
+
+# ----- Sistema operativo / IDE -----
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----- Credenciales locales (NUNCA subir secretos) -----
+.env
+.env.*
+*.env.local
+**/secrets/
+**/credentials/
+**/.influxdbv3/
+*.token
+
+# =============================================================================
+# Grafana 13.0.1
+# Persistir SOLO la carpeta conf/ (configuraciones, provisioning, dashboards).
+# El resto son binarios, frontend pre-compilado, docs y datos runtime que se
+# obtienen al descomprimir la release oficial de Grafana Labs.
+# =============================================================================
+grafana-13.0.1/bin/
+grafana-13.0.1/public/
+grafana-13.0.1/docs/
+grafana-13.0.1/packaging/
+grafana-13.0.1/plugins-bundled/
+grafana-13.0.1/tools/
+
+# Datos runtime de Grafana (DB sqlite, sesiones, cache, plugins descargados,
+# logs, exports png/csv, plugins-bundled embebidos en data/)
+grafana-13.0.1/data/
+
+# =============================================================================
+# InfluxDB 3 Core (Windows amd64)
+# Persistir SOLO configuraciones y scripts propios.
+# El resto son el binario principal, runtime de Python embebido y datos.
+# =============================================================================
+# Runtime de Python embebido distribuido con InfluxDB
+influxdb3-core-3.9.1-windows_amd64/python/
+
+# Datos runtime de InfluxDB 3 (object-store, WAL, catálogo, cache, plugins)
+influxdb3-core-3.9.1-windows_amd64/data/
+influxdb3-core-3.9.1-windows_amd64/object-store/
+influxdb3-core-3.9.1-windows_amd64/wal/
+influxdb3-core-3.9.1-windows_amd64/cache/
+influxdb3-core-3.9.1-windows_amd64/plugins/
