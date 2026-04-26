@@ -1,0 +1,164 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Vista unificada de logs del backend (pos-relational-data-service) y errores del frontend Angular. Datos en InfluxDB measurement backend_log y frontend_error.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Backend - eventos por nivel (rate / min)",
+      "id": 1,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "infinito-influx" },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT date_bin(INTERVAL '1 minute', time) AS time, level, COUNT(*) AS eventos FROM backend_log WHERE time >= NOW() - INTERVAL '6 hours' GROUP BY 1, level ORDER BY 1",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "fillOpacity": 50 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "ERROR" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] },
+          { "matcher": { "id": "byName", "options": "WARN"  }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } } ] },
+          { "matcher": { "id": "byName", "options": "INFO"  }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } } ] }
+        ]
+      },
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "right" } }
+    },
+    {
+      "type": "stat",
+      "title": "Frontend - errores ultima hora",
+      "id": 2,
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "infinito-influx" },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT COUNT(*) AS errores FROM frontend_error WHERE time >= NOW() - INTERVAL '1 hour'",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 1 },
+            { "color": "red", "value": 5 }
+          ] }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "type": "stat",
+      "title": "Backend - errores ultima hora",
+      "id": 3,
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "infinito-influx" },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT COUNT(*) AS errores FROM backend_log WHERE level = 'ERROR' AND time >= NOW() - INTERVAL '1 hour'",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 1 },
+            { "color": "red", "value": 5 }
+          ] }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "type": "table",
+      "title": "Frontend errors - ultimos 50 (equivalente a la tabla reporte_frontend)",
+      "id": 4,
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 8 },
+      "datasource": { "type": "influxdb", "uid": "infinito-influx" },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT time, url, error_type, error, actividad, reporte_id FROM frontend_error ORDER BY time DESC LIMIT 50",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "auto", "filterable": true } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "error" },     "properties": [ { "id": "custom.width", "value": 350 } ] },
+          { "matcher": { "id": "byName", "options": "actividad" }, "properties": [ { "id": "custom.width", "value": 400 } ] },
+          { "matcher": { "id": "byName", "options": "url" },       "properties": [ { "id": "custom.width", "value": 200 } ] },
+          { "matcher": { "id": "byName", "options": "error_type" },"properties": [ { "id": "custom.width", "value": 130 } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm" }
+    },
+    {
+      "type": "table",
+      "title": "Backend logs - ultimos 100",
+      "id": 5,
+      "gridPos": { "h": 14, "w": 24, "x": 0, "y": 20 },
+      "datasource": { "type": "influxdb", "uid": "infinito-influx" },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT time, level, logger, thread, message FROM backend_log ORDER BY time DESC LIMIT 100",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "auto", "filterable": true } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "level" },     "properties": [ { "id": "custom.width", "value": 70 },
+              { "id": "mappings", "value": [
+                  { "type": "value", "options": { "ERROR": { "color": "red",    "index": 0 },
+                                                   "WARN":  { "color": "orange", "index": 1 },
+                                                   "INFO":  { "color": "blue",   "index": 2 },
+                                                   "DEBUG": { "color": "gray",   "index": 3 } } }
+                ] }
+            ] },
+          { "matcher": { "id": "byName", "options": "logger" },    "properties": [ { "id": "custom.width", "value": 280 } ] },
+          { "matcher": { "id": "byName", "options": "message" },   "properties": [ { "id": "custom.width", "value": 500 } ] },
+          { "matcher": { "id": "byName", "options": "exception" }, "properties": [ { "id": "custom.width", "value": 350 } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm" }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [ "infinito", "logs", "monitoreo" ],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Infinito - Monitoreo (Backend + Frontend)",
+  "uid": "infinito-monitoreo",
+  "version": 1,
+  "weekStart": ""
+}

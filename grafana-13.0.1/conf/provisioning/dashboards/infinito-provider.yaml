@@ -1,0 +1,21 @@
+# =============================================================================
+# Provider de dashboards provisionados (proyecto logs-infinito)
+# Grafana escanea la carpeta indicada y carga todos los .json al startup.
+# =============================================================================
+apiVersion: 1
+
+providers:
+  - name: 'Infinito'
+    orgId: 1
+    folder: 'Infinito'
+    folderUid: 'infinito-folder'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      # Path RELATIVO al homepath de Grafana.
+      # Apunta a conf/provisioning/dashboards/json/ (junto a este YAML)
+      path: conf/provisioning/dashboards/json
+      foldersFromFilesStructure: false

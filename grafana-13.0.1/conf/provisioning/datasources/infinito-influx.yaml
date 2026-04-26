@@ -1,0 +1,29 @@
+# =============================================================================
+# Datasource provisionado: InfluxDB 3 Core (proyecto logs-infinito)
+# Grafana lo carga automaticamente al startup leyendo este archivo.
+# Doc oficial:
+#   https://grafana.com/docs/grafana/latest/datasources/influxdb/influxdb-v3/
+# =============================================================================
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB-Infinito
+    uid: infinito-influx
+    type: influxdb
+    access: proxy
+    url: http://127.0.0.1:8181
+    isDefault: true
+    editable: true
+    jsonData:
+      # Modo SQL para InfluxDB 3.x (usa FlightSQL bajo el capo).
+      version: SQL
+      # Database (bucket) creada por InfluxBootstrap del ms negocio
+      dbName: infinito_logs
+      # Habilitar 'insecure' es necesario cuando InfluxDB se ejecuta sin TLS
+      # (nuestro caso local con --without-auth).
+      insecureGrpc: true
+      httpMode: POST
+    secureJsonData:
+      # Vacio porque arrancamos InfluxDB con --without-auth.
+      # Si manana se activa auth, poner aqui:  token: <admin-token>
+      token: ""
